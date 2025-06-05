@@ -3,14 +3,12 @@ import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
-import InfoChatbox from "@/components/info-chatbox"
-
+import ClientLayout from "@/components/client-layout"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Corner Predictor LaLiga",
   description: "Predicción inteligente de tiros de esquina en partidos de LaLiga",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -22,8 +20,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          {children}
-          <InfoChatbox />
+          <ClientLayout>{children}</ClientLayout>
         </ThemeProvider>
       </body>
     </html>

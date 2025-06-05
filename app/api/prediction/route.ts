@@ -18,11 +18,11 @@ export async function POST(request: Request) {
 
     // Crear el prompt para ChatGPT
     const prompt = createPrompt(homeTeam, awayTeam, homeStats, awayStats);
-    console.log("Prompt enviado a ChatGPT:", prompt);
 
     const client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY, // Asegúrate de tener la clave API configurada
     });
+    console.log("API Key: " + process.env.OPENAI_API_KEY);
 
     const response = await client.chat.completions.create({
       model: "gpt-4o-mini", // o gpt-4.1-mini

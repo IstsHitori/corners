@@ -26,11 +26,11 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2">
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                Haidith LaLiga 👧
+                CornerPlay
               </h1>
               <p className="text-white/90 text-lg mb-6">
                 Predicciones inteligentes de tiros de esquina con análisis
-                avanzado e IA
+               e IA
               </p>
               <div className="flex gap-4">
                 <Link href="/analisis/jornada/38">

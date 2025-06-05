@@ -1,5 +1,5 @@
-import { matches } from "./matches"
-import { cornerAnalysisRepository } from "./corner-analysis-repository"
+import { matches } from "./matches";
+import { cornerAnalysisRepository } from "./corner-analysis-repository";
 
 export const recentMatchesData = {
   getafe: [
@@ -704,103 +704,72 @@ export const recentMatchesData = {
       isHome: true,
     },
   ],
-}
+};
 
 export const matchRepository = {
   getUpcomingMatches: async (date: Date) => {
-    console.log("Repository getting matches for date:", date)
+    console.log("Repository getting matches for date:", date);
 
-    // Convertir la fecha a formato string para comparar (DD/MM/YYYY)
     const dateStr = date
       .toLocaleDateString("es-ES", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
       })
-      .replace(/\//g, "/")
+      .replace(/\//g, "/");
 
-    // Para depuración
-    console.log("Looking for matches on date:", dateStr)
-    console.log(
-      "Available matches:",
-      matches.map((m) => ({ id: m.id, date: m.date })),
-    )
+    console.log("Looking for matches on date:", dateStr);
 
-    // Filtrar partidos por fecha
-    const matchesByDate = matches.filter((match) => {
-      return match.date === dateStr && match.status === "upcoming"
-    })
+    // SOLO FILTRAR POR JORNADA 38 - CAMBIO PRINCIPAL
+    const jornada38Matches = matches.filter(
+      (match) => match.matchday === 38 && match.status.toLowerCase() === "upcoming"
+    );
 
-    console.log("Matches found for date:", matchesByDate.length)
-
-    // Si no hay partidos para esa fecha exacta, devolver partidos de la jornada más cercana
-    if (matchesByDate.length === 0) {
-      // Devolver algunos partidos por defecto para que siempre haya contenido
-      return matches.filter((match) => match.status === "upcoming").slice(0, 3)
-    }
-
-    return matchesByDate
+    console.log(`Found ${jornada38Matches.length} matches from matchday 38`);
+    
+    return jornada38Matches;
   },
 
   getMatchById: async (id: string) => {
-    console.log("Repository getting match by ID:", id)
-    const match = matches.find((m) => m.id === id)
-    console.log("Match found:", match ? "yes" : "no")
-    return match || null
+    console.log("Repository getting match by ID:", id);
+    const match = matches.find((m) => m.id === id);
+    console.log("Match found:", match ? "yes" : "no");
+    return match || null;
   },
 
   getLastMatches: async (teamId: string, count = 5) => {
-    console.log("Repository getting last matches for team:", teamId)
-    const teamMatches = recentMatchesData[teamId as keyof typeof recentMatchesData] || []
-    return teamMatches.slice(0, count)
+    console.log("Repository getting last matches for team:", teamId);
+    const teamMatches =
+      recentMatchesData[teamId as keyof typeof recentMatchesData] || [];
+    return teamMatches.slice(0, count);
   },
 
   getAllRemainingMatches: async () => {
-    // Obtener la fecha actual
-    const today = new Date()
-    const todayStr = today
-      .toLocaleDateString("es-ES", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-      .replace(/\//g, "/")
-
-    // Filtrar partidos que son de hoy o posteriores
+    // SOLO DEVOLVER JORNADA 38 - CAMBIO PRINCIPAL
     return matches
-      .filter((match) => {
-        // Convertir la fecha del partido a un objeto Date para comparar
-        const [day, month, year] = match.date.split("/").map(Number)
-        const matchDate = new Date(year, month - 1, day)
-
-        // Convertir la fecha actual a un objeto Date sin la hora
-        const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-
-        // Devolver true si el partido es de hoy o posterior
-        return matchDate >= todayDate && match.status === "upcoming"
-      })
+      .filter((match) => match.matchday === 38 && match.status === "upcoming")
       .sort((a, b) => {
         // Ordenar primero por fecha
-        const [dayA, monthA, yearA] = a.date.split("/").map(Number)
-        const [dayB, monthB, yearB] = b.date.split("/").map(Number)
+        const [dayA, monthA, yearA] = a.date.split("/").map(Number);
+        const [dayB, monthB, yearB] = b.date.split("/").map(Number);
 
-        const dateA = new Date(yearA, monthA - 1, dayA)
-        const dateB = new Date(yearB, monthB - 1, dayB)
+        const dateA = new Date(yearA, monthA - 1, dayA);
+        const dateB = new Date(yearB, monthB - 1, dayB);
 
         if (dateA.getTime() !== dateB.getTime()) {
-          return dateA.getTime() - dateB.getTime()
+          return dateA.getTime() - dateB.getTime();
         }
 
         // Si las fechas son iguales, ordenar por hora
-        return a.time.localeCompare(b.time)
-      })
+        return a.time.localeCompare(b.time);
+      });
   },
 
   getMatchesByMatchday: async (matchday: number) => {
-    return matches.filter((match) => match.matchday === matchday)
+    return matches.filter((match) => match.matchday === matchday);
   },
 
   getCornerAnalysisByMatchday: async (matchday: number) => {
-    return cornerAnalysisRepository.getCornerAnalysisByMatchday(matchday)
+    return cornerAnalysisRepository.getCornerAnalysisByMatchday(matchday);
   },
-}
+};

@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChevronDown, ChevronUp, MessageSquare } from "lucide-react"
+import { ChevronDown, ChevronUp, MessageSquare, Download } from "lucide-react"
 import MessiHelpIcon from "./messi-help-icon"
+import { downloadChatbotDocumentation } from "@/lib/utils/chatbot-documentation"
 
 // Tipos para los mensajes y opciones
 type MessageType = "system" | "option"
@@ -246,6 +247,16 @@ export default function InfoChatbox() {
     setMessages([helpTopics.welcome])
   }
 
+  // Función para descargar la documentación
+  const handleDownloadDocumentation = () => {
+    try {
+      downloadChatbotDocumentation()
+    } catch (error) {
+      console.error("Error al descargar la documentación:", error)
+      // Mostrar un mensaje de error al usuario si es necesario
+    }
+  }
+
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
       {/* Icono animado de Messi */}
@@ -253,15 +264,26 @@ export default function InfoChatbox() {
 
       {/* Contenedor del chatbox */}
       {isOpen && (
-        <Card className="w-80 md:w-96 mt-2 shadow-xl border-2 border-blue-900/20 overflow-hidden">
+        <Card className="w-80 md:w-96 mt-2 shadow-xl border-2 border-blue-900/20 overflow-hidden max-w-[calc(100vw-2rem)]">
           <CardHeader className="bg-gradient-to-r from-red-600/10 to-blue-900/10 py-3 flex flex-row items-center justify-between">
             <CardTitle className="text-lg flex items-center">
               <MessageSquare className="h-5 w-5 mr-2" />
               Asistente Messi
             </CardTitle>
-            <Button variant="ghost" size="sm" onClick={toggleMinimize} className="h-8 w-8 p-0">
-              {isMinimized ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDownloadDocumentation}
+                className="h-8 w-8 p-0"
+                title="Descargar manual de usuario"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={toggleMinimize} className="h-8 w-8 p-0">
+                {isMinimized ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+            </div>
           </CardHeader>
 
           {!isMinimized && (
@@ -270,9 +292,9 @@ export default function InfoChatbox() {
               <div className="h-80 overflow-y-auto p-4 space-y-4">
                 {messages.map((message, index) => (
                   <div key={`${message.id}-${index}`} className="space-y-2">
-                    <div className="bg-slate-100 rounded-lg p-3 text-sm">
+                    <div className="bg-slate-100 rounded-lg p-3 text-sm break-words">
                       {message.content.split("\n\n").map((paragraph, i) => (
-                        <p key={i} className={i > 0 ? "mt-2" : ""}>
+                        <p key={i} className={`${i > 0 ? "mt-2" : ""} leading-relaxed`}>
                           {paragraph}
                         </p>
                       ))}
@@ -285,7 +307,7 @@ export default function InfoChatbox() {
                             key={option.id}
                             variant="outline"
                             size="sm"
-                            className="justify-start h-auto py-2 text-left"
+                            className="justify-start h-auto py-2 px-3 text-left text-xs leading-relaxed break-words whitespace-normal"
                             onClick={() => addMessage(option.action)}
                           >
                             {option.label}
@@ -301,14 +323,26 @@ export default function InfoChatbox() {
               {/* Pie del chat con colores del Barcelona */}
               <div className="p-3 border-t bg-gradient-to-r from-blue-900/10 to-red-600/10 flex justify-between items-center">
                 <span className="text-xs text-muted-foreground">Asistente de Corner Predictor</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={resetChat}
-                  className="border-blue-900/20 hover:bg-blue-900/10"
-                >
-                  Reiniciar
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDownloadDocumentation}
+                    className="border-blue-900/20 hover:bg-blue-900/10 text-xs"
+                    title="Descargar manual completo"
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    Manual
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={resetChat}
+                    className="border-blue-900/20 hover:bg-blue-900/10"
+                  >
+                    Reiniciar
+                  </Button>
+                </div>
               </div>
             </CardContent>
           )}
